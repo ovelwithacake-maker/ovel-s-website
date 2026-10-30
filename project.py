@@ -2985,3 +2985,80 @@ elif st.session_state.page == "quiz":
 elif st.session_state.page == "result":
 
     result_page()
+import streamlit as st
+import random
+
+# Page settings
+st.set_page_config(
+    page_title="Number Guessing Game",
+    page_icon="🎮",
+    layout="centered"
+)
+
+# Initialize game
+if "secret_number" not in st.session_state:
+    st.session_state.secret_number = random.randint(1, 100)
+    st.session_state.attempts = 0
+    st.session_state.game_over = False
+    st.session_state.message = "Make your first guess! Good luck!"
+
+# Website design
+st.title("🎮 Number Guessing Game")
+st.subheader("Can You Beat the Computer?")
+
+st.write(
+    "The computer is thinking of a number between **1 and 100**."
+)
+
+st.info(st.session_state.message)
+
+# Guess input
+guess = st.number_input(
+    "🔢 Enter your guess:",
+    min_value=1,
+    max_value=100,
+    value=50,
+    step=1,
+    disabled=st.session_state.game_over
+)
+
+# Guess button
+if st.button("🚀 SUBMIT GUESS", use_container_width=True):
+    if not st.session_state.game_over:
+
+        st.session_state.attempts += 1
+
+        if guess < st.session_state.secret_number:
+            st.session_state.message = "📈 TOO LOW! Try a bigger number!"
+
+        elif guess > st.session_state.secret_number:
+            st.session_state.message = "📉 TOO HIGH! Try a smaller number!"
+
+        else:
+            st.session_state.message = (
+                f"🎉 CONGRATULATIONS! You guessed "
+                f"{st.session_state.secret_number}!"
+            )
+            st.session_state.game_over = True
+
+        st.rerun()
+
+# Attempts counter
+st.metric("🎯 Number of Attempts", st.session_state.attempts)
+
+# Win message
+if st.session_state.game_over:
+    st.balloons()
+    st.success("YOU WIN! 🏆")
+    st.write(f"You found the number in {st.session_state.attempts} attempts!")
+
+# Restart game
+if st.button("🔄 NEW GAME", use_container_width=True):
+    st.session_state.secret_number = random.randint(1, 100)
+    st.session_state.attempts = 0
+    st.session_state.game_over = False
+    st.session_state.message = "New number selected! Start guessing!"
+    st.rerun()
+
+st.divider()
+st.caption("Made with Python ❤️ using Streamlit")
